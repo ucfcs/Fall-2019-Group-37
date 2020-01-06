@@ -1,0 +1,38 @@
+Flash SD and Setup OS
+    https://developer.nvidia.com/embedded/learn/get-started-jetson-nano-devkit#intro
+
+Setup Wifi/Bluetooth Card
+    https://www.jetsonhacks.com/2019/04/08/jetson-nano-intel-wifi-and-bluetooth/
+
+ Optional: Add Fan
+    https://www.jetsonhacks.com/2019/09/08/jetson-nano-add-a-fan/
+
+Install ROS
+    https://www.jetsonhacks.com/2019/10/23/install-ros-on-jetson-nano/
+
+Install Arduino IDE on Jetson Nano
+    https://www.youtube.com/watch?v=sOpPAraBmPk
+
+Setup RPLIDAR with ROS
+    http://wiki.ros.org/rplidar
+    https://github.com/slamtec/rplidar_ros
+
+Headless Setup
+
+
+Optional: Automount External Drive
+    https://www.jetsonhacks.com/2019/04/17/jetson-nano-automount-drive/
+
+Optional: Use More Memory with Swapfile
+    https://www.jetsonhacks.com/2019/04/14/jetson-nano-use-more-memory/
+
+Optional: Use More Power with Beefier Power Supply
+    https://www.jetsonhacks.com/2019/04/10/jetson-nano-use-more-power/
+
+Optional: Add Vscode and Python on Jetson Nano
+    https://www.youtube.com/watch?v=2sHQBTtDz6c
+
+Useful Commands
+    Check Computing/Power Usage
+        tegrastats 
+            https://docs.nvidia.com/jetson/l4t/index.html#page/Tegra%2520Linux%2520Driver%2520Package%2520Development%2520Guide%2FAppendixTegraStats.html%23wwpID0E0SB0HA
