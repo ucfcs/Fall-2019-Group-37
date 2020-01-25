@@ -1,17 +1,28 @@
 /* 
  *  ROS subscriber for motor speed commands
+ *  
+ *  To test (typically 3 terminals):
+ *  
+ *  (1) roscore
+ *  
+ *  (2) rosrun rosserial_python serial_node.py /dev/ttyACM0
+ *
+ *  (3) rostopic pub motors egoat/SetMotorSpeed '{left_motor: 100, right_motor: 100}' --once
+ *  
+ *  Replacing /dev/ttyACM0 with the serial port of the Arduino device
+ *  and using the desired values for the left and right motor speeds
  */
 
 #include <ros.h>
 #include "egoat/SetMotorSpeed.h"
 
 //Motor Pins
-int EN_A = 11;      //Enable pin for first motor
-int IN1 = 9;       //control pin for first motor
-int IN2 = 8;       //control pin for first motor
-int IN3 = 7;        //control pin for second motor
-int IN4 = 6;        //control pin for second motor
-int EN_B = 10;      //Enable pin for second motor
+const int EN_A = 11;      //Enable pin for first motor
+const int IN1 = 9;       //control pin for first motor
+const int IN2 = 8;       //control pin for first motor
+const int IN3 = 7;        //control pin for second motor
+const int IN4 = 6;        //control pin for second motor
+const int EN_B = 10;      //Enable pin for second motor
 
 ros::NodeHandle  nh;
 
@@ -50,15 +61,25 @@ void messageCb(const egoat::SetMotorSpeed& msg){
 void writeMotorSpeedAndDirection(int messageValue, int enablePin, int input1, int input2) {
   int powerOut = map(abs(messageValue), 0, 100, 0, 255);
   analogWrite(enablePin, powerOut);
+  char buf[10];
+    nh.loginfo("analogWrite:");
+    nh.loginfo("enablePin:");
+    nh.loginfo(itoa(enablePin, buf, 10));
+    nh.loginfo("powerOut:");
+    nh.loginfo(itoa(powerOut, buf, 10));
   if(messageValue > 0) {
     digitalWrite(input1, HIGH);
     digitalWrite(input2, LOW);
+    nh.loginfo("digitalWrite HIGH LOW");
   } else if(messageValue < 0) {
     digitalWrite(input1, LOW);
     digitalWrite(input2, HIGH);
+    nh.loginfo("digitalWrite LOW HIGH");
   } else {
     digitalWrite(input1, LOW);
     digitalWrite(input2, LOW);
+    
+    nh.loginfo("digitalWrite LOW LOW");
   }
 }
 
