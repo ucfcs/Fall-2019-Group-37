@@ -35,7 +35,8 @@ cd ~/catkin_ws/src/
 git clone --branch catkin https://github.com/ucfcs/Fall-2019-Group-37.git egoat
 cd ..
 catkin_make
-rosrun rosserial_client make_libraries ~/Arduino/libraries
+cd ~/Arduino/libraries
+rosrun rosserial_client make_libraries .
 ```
 Note that `echo $ROS_PACKAGE_PATH` at this point should include `home/[username]/catkin_ws/src` and `/opt/ros/melodic/share`
 This should work as long as your Arduino sketchbook location in the GUI IDE is set to `~/Arduino`
