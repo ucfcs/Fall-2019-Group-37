@@ -33,6 +33,7 @@ cd ..
 catkin_make
 cd ~/catkin_ws/src/
 git clone --branch catkin https://github.com/ucfcs/Fall-2019-Group-37.git egoat
+cd ..
 catkin_make
 rosrun rosserial_client make_libraries ~/Arduino/libraries
 ```
