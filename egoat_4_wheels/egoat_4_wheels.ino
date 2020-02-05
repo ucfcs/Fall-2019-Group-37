@@ -32,6 +32,19 @@ const int RIGHT_IN3 = 47;
 const int RIGHT_IN4 = 45;
 const int RIGHT_EN_B = 43;
 
+//Ultrasonic Sensor Pins
+const int FRONT_TRIG_PIN = 1;
+const int FRONT_ECHO_PIN = 2;
+const int BACK_TRIG_PIN = 3;
+const int BACK_ECHO_PIN = 4;
+
+//Variables for calculating distance from ultrasonic sensors
+long duration;
+int frontDistance;
+int backDistance;
+int nearDistance = 10; //Distance to compare to for ultrasonic sensors
+
+
 ros::NodeHandle  nh;
 
 /*
@@ -94,11 +107,60 @@ void writeMotorSpeedAndDirection(int messageValue, int enablePin, int input1, in
   }
 }
 
+bool checkDistanceFrontAndBack() {
+  //Clear trigger pins
+  digitalWrite(FRONT_TRIGGER_PIN, LOW);
+  digitalWrite(BACK_TRIGGER_PIN, LOW);
+  delayMicroseconds(2);
+  
+  //Set trigger pins on HIGH for 10ms
+  digitalWrite(FRONT_TRIGGER_PIN, HIGH);
+  digitalWrite(BACK_TRIGGER_PIN, HIGH);
+  delayMicroseconds(10);
+
+  //Return trigger pins to LOW
+  digitalWrite(FRONT_TRIGGER_PIN, LOW);
+  digitalWrite(BACK_TRIGGER_PIN, LOW);
+
+  //Read echo pins, returns sound wave travel time
+  duration = pulseIn(FRONT_ECHO_PIN, HIGH);
+  frontDistance = duration * 0.034 / 2;
+  duration = pulseIn(BACK_ECHO_PIN, HIGH);
+  backDistance = duration * 0.034 / 2;
+
+  //Check front and back distances.
+  if(backDistance <= nearDistance || frontDistance <= nearDistance)
+    return true;
+  return false;
+}
+
+void stopRoverMessage(bool stop)
+{
+  if(stop)
+  {
+    stopRover();
+    //TODO publish stop rover message with true
+    return;
+  }
+  //TODO publish stop rover message with false
+    
+}
+
+//TODO stop rover
+void stopRover()
+{
+  analogWrite(LEFT_EN_A, 0);
+  analogWrite(LEFT_EN_B, 0);
+  analogWrite(RIGHT_EN_A, 0);
+  analogWrite(RIGHT_EN_B, 0);
+}
+
 ros::Subscriber<egoat::SetMotorSpeed> sub("motors", &messageCb);
+ros::Publisher stop_pub = nh.advertise<egoat::StopRover>("stop", 100);
 
 void setup()
 {   
-  // Set up motor controller pins
+  // Set up left motor controller pins
   pinMode(LEFT_EN_A, OUTPUT);
   pinMode(LEFT_IN1, OUTPUT);  
   pinMode(LEFT_IN2, OUTPUT);
@@ -106,12 +168,19 @@ void setup()
   pinMode(LEFT_IN4, OUTPUT);
   pinMode(LEFT_EN_B, OUTPUT);
 
+  //Set up right motor controller pins
   pinMode(RIGHT_EN_A, OUTPUT);
   pinMode(RIGHT_IN1, OUTPUT);  
   pinMode(RIGHT_IN2, OUTPUT);
   pinMode(RIGHT_IN3, OUTPUT);  
   pinMode(RIGHT_IN4, OUTPUT);
   pinMode(RIGHT_EN_B, OUTPUT);
+
+  //Setup front and back ultrasonic sensor pins
+  pinMode(FRONT_TRIGGER_PIN, OUTPUT); 
+  pinMode(FRONT_ECHO_PIN, INPUT); 
+  pinMode(BACK_TRIGGER_PIN, OUTPUT); 
+  pinMode(BACK_ECHO_PIN, INPUT); 
 
   // Set up the NodeHandler for ROS
   nh.initNode();
@@ -123,7 +192,9 @@ void setup()
  * sensors detect an obstacle.
  */
 void loop()
-{  
+{ 
+  stopRoverMessage(checkDistanceFrontAndBack);
+  
   nh.spinOnce();
   delay(1);
 }
