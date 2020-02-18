@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   rosserial_arduino
   rplidar_ros
+  tf
   std_msgs
   message_generation
 )
@@ -107,7 +108,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES egoat
-  CATKIN_DEPENDS roscpp rospy rosserial_arduino rplidar_ros std_msgs message_runtime
+  CATKIN_DEPENDS roscpp rospy rosserial_arduino rplidar_ros tf std_msgs message_runtime
 #  DEPENDS system_lib
 )
 
@@ -136,6 +137,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/egoat_node.cpp)
+add_executable(tf_broadcaster src/tf_broadcaster.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -151,6 +153,7 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+target_link_libraries(tf_broadcaster ${catkin_LIBRARIES})
 
 #############
 ## Install ##
