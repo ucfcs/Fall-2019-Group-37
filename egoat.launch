@@ -12,8 +12,6 @@
   </node>
   <node pkg="egoat" type="tf_broadcaster" name="transform" output="screen">
   </node>
-  <!--
   <node pkg="hector_mapping" type="hector_mapping" name="hector_mapping" output="screen">
   </node>
-  -->
 </launch> 
