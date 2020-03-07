@@ -11,18 +11,21 @@
 <!-- Start RPLIDAR Node on USB -->
 <!-- TODO: "inverted" may have to be changed -->
   <node pkg="rplidar_ros" type="rplidarNode" name="rplidar" output="screen">
-    <param name="inverted" value="true" />
+    <param name="inverted"            type="bool"   value="true"/>
     <param name="serial_port"         type="string" value="/dev/ttyUSB0"/>
     <param name="serial_baudrate"     type="int"    value="115200"/><!--A1/A2 -->
     <param name="frame_id"            type="string" value="laser"/>
     <param name="angle_compensate"    type="bool"   value="true"/>
   </node>
 
+<!-- Static transform for /base_link to /laser -->
   <node pkg="tf" type="static_transform_publisher" name="base_to_laser_broadcaster" args="0 0 0 0 0 0 /base_link /laser 100"/>
-<!--   <node pkg="tf" type="static_transform_publisher" name="odom_to_base_link" args="0 0 0 0 0 0 /odom /base_link 100" /> -->
-<!-- <node pkg="tf" type="static_transform_publisher" name="map_to_odom" args="0 0 0 0 0 0 /map /odom 100" /> -->
+
+
+<!-- Start Hector mapping -->
   <node pkg="hector_mapping" type="hector_mapping" name="hector_mapping" output="screen">
     <param name="pub_map_odom_transform" value="true"/>
+    <param name="pub_odometry" value="true"/>
     <param name="map_frame" value="map" />
     <param name="base_frame" value="base_link" />
     <param name="odom_frame" value="base_link" />
@@ -30,12 +33,10 @@
 
   <include file="$(find hector_geotiff)/launch/geotiff_mapper.launch">
     <arg name="trajectory_source_frame_name" value="scanmatcher_frame"/>
-    <arg name="map_file_path" value="$(find hector_geotiff/maps"/>
+    <arg name="map_file_path" value="$(find hector_geotiff)/maps"/>
   </include>
-  
-<!-- Run the map server --> 
-<!--  <node name="map_server" pkg="map_server" type="map_server" args=""/> -->
 
+<!-- Start move_base -->
    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <rosparam file="$(find egoat)/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
     <rosparam file="$(find egoat)/costmap_common_params.yaml" command="load" ns="local_costmap" />
@@ -45,7 +46,7 @@
   </node>
 
 <!-- Use the default Hector SLAM RViz config -->
-  <node pkg="rviz" type="rviz" name="rviz"
+<!--  <node pkg="rviz" type="rviz" name="rviz"
     args="-d $(find hector_slam_launch)/rviz_cfg/mapping_demo.rviz"/>
-
+-->
 </launch>
