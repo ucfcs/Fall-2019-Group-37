@@ -1,9 +1,10 @@
 local_costmap:
-  global_frame: odom
+# Setting global_frame to map since bot does not provide odom
+# see also: https://answers.ros.org/question/342005/configure-move_base-using-only-hector_mapping/
+  global_frame: map
   robot_base_frame: base_link
   update_frequency: 5.0
   publish_frequency: 2.0
-  static_map: false
   rolling_window: true
   width: 6.0
   height: 6.0
