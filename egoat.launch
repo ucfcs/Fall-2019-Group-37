@@ -4,7 +4,7 @@
     <param name="baud" value="57600" />
   </node>
   <node pkg="rplidar_ros" type="rplidarNode" name="rplidar" output="screen">
-    <param name="inverted" value="true" />
+    <param name="inverted" value="TRUE" />
     <param name="serial_port"         type="string" value="/dev/ttyUSB0"/>
     <param name="serial_baudrate"     type="int"    value="115200"/><!--A1/A2 -->
     <param name="frame_id"            type="string" value="laser"/>
