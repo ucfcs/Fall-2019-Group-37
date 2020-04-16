@@ -1,35 +1,30 @@
 /* 
- *  ROS subscriber for motor speed commands
- *  
- *  To test (typically 3 terminals):
- *  
- *  (1) roscore
- *  
- *  (2) rosrun rosserial_python serial_node.py /dev/ttyACM0
- *
- *  (3) rostopic pub motors egoat/SetMotorSpeed '{left_motor: 100, right_motor: 100}' --once
- *  
- *  Replacing /dev/ttyACM0 with the serial port of the Arduino device
- *  and using the desired values for the left and right motor speeds
+ *  ROS subscriber for Twist messages
  */
  
 #include <Arduino.h>
 #include <Wire.h>
-#include <MPU9250.h>
 #include <ros.h>
-#include "ros/time.h"
 #include "geometry_msgs/Twist.h"
-#include "tf/transform_broadcaster.h"
-#include "nav_msgs/Odometry.h"
+
+/*
+ * Currently:
+ * Arduino:
+ *  purple, blue, green, yellow, white, grey
+ *  13,     12,   11,    10,     9,     8
+ * Motor controller:
+ *  white, yellow, green, blue, purpple, grey
+ *  (9,    10,     11,    12,   13,      8)
+ */
 
 //Motor Pins
-const int EN_R = 9;      //Enable pin for left motor
-const int IN1_R = 11;    //control pin for left motor
-const int IN2_R = 10;    //control pin for left motor
+const int EN_R = 8;      //Enable pin for right motor
+const int IN1_R = 12;    //control pin for right motor
+const int IN2_R = 13;    //control pin for right motor
 
-const int IN1_L = 13;    //control pin for right motor
-const int IN2_L = 12;    //control pin for right motor
-const int EN_L = 8;      //Enable pin for right motor
+const int IN1_L = 10;    //control pin for left motor
+const int IN2_L = 11;    //control pin for left motor
+const int EN_L = 9;      //Enable pin for left motor
 
 //Bot dimensions
 //TODO: Correct for final bot
@@ -43,9 +38,6 @@ const double max_wheel_vel = TWO_PI * wheel_rad * (max_rpm / 60.0);
 double wheel_r = 0.0, wheel_l = 0.0;
 
 ros::NodeHandle  nh;
-
-//IMU declaration
-MPU9250 IMU(Wire,0x68);
 
 void stopAllMotors();
 
@@ -66,6 +58,14 @@ void messageCbTwist( const geometry_msgs::Twist& msg){
 }
 
 void wheel_l_pulse(int pulse) {
+  char msg[80]="LEFT wheel pulse: ";
+  nh.logdebug(msg);
+  char buf[7]="";
+  dtostrf(pulse, 7, 0, buf);
+  nh.logdebug(buf);
+  strcat(msg, buf);
+  nh.logdebug(msg);
+  
   if (pulse > 0) {
     analogWrite(EN_L, pulse);
     digitalWrite(IN1_L, HIGH);
@@ -81,6 +81,7 @@ void wheel_l_pulse(int pulse) {
 }
 
 void wheel_r_pulse(int pulse) {
+  
   if (pulse > 0) {
     analogWrite(EN_R, pulse);
     digitalWrite(IN1_R, LOW);
@@ -110,13 +111,6 @@ void wheel_r_stop() {
 }
 
 ros::Subscriber<geometry_msgs::Twist> sub("cmd_vel", &messageCbTwist);
-nav_msgs::Odometry odom_msg;
-//ros::Publisher odom_pub("odom", &odom_msg);
-tf::TransformBroadcaster odom_broadcaster;
-
-ros::Time current_time, last_time;
-char base_link[] = "/base_link";
-// char odom[] = "/odom";
 
 void setup()
 {   
@@ -127,18 +121,14 @@ void setup()
   pinMode(IN1_R, OUTPUT);  
   pinMode(IN2_R, OUTPUT);
   pinMode(EN_R, OUTPUT);
-  
-  stopAllMotors();
-
-  int status;
-  status = IMU.begin();
 
   // Set up the NodeHandler for ROS
   nh.initNode();
   nh.subscribe(sub);
-//  nh.advertise(odom_pub);
 
-  current_time = last_time = nh.now();
+  nh.loginfo("Node handler initialized.");
+  
+  stopAllMotors();
 }
 
 /*
@@ -146,13 +136,17 @@ void setup()
  * sensors detect an obstacle.
  */
 void loop()
-{  
-  nh.spinOnce();
+{
+  while(!nh.connected()) {  
+    nh.spinOnce();
+  }
   
   wheel_l_pulse(wheel_l*10);
   wheel_r_pulse(wheel_r*10);
   
   delay(1);
+  nh.spinOnce();
+
 }
 
 void stopAllMotors() {
