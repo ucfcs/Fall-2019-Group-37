@@ -10,6 +10,3 @@
 [submodule "src/rplidar_ros"]
 	path = src/rplidar_ros
 	url = https://github.com/rpilidar_ros.git
-[submodule "src/egoat"]
-	path = src/egoat
-	url = https://github.com/ucfcs/Fall-2019-Group37/tree/catkin.git
