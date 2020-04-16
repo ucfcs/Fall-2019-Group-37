@@ -1,3 +1,15 @@
 [submodule "src/hector_slam"]
 	path = src/hector_slam
 	url = https://github.com/tu-darmstadt-ros-pkg/hector_slam.git
+[submodule "src/nmea_navsat_driver"]
+	path = src/nmea_navsat_driver
+	url = https://github.com/ros-drivers/nmea_navsat_driver.git
+[submodule "src/rosserial"]
+	path = src/rosserial
+	url = https://github.com/ros-drivers/rosserial.git
+[submodule "src/rplidar_ros"]
+	path = src/rplidar_ros
+	url = https://github.com/rpilidar_ros.git
+[submodule "src/egoat"]
+	path = src/egoat
+	url = https://github.com/ucfcs/Fall-2019-Group37/tree/catkin.git
